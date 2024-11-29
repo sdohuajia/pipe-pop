@@ -65,14 +65,14 @@ function show_private_key() {
 
 # 运行pipe节点的函数
 function run_pipe_node() {
-    # 用户需要填写的下载链接
-    PIPE_URL="在这里填写 pipe-tool 的下载链接"
-    DCDND_URL="在这里填写 dcdnd 的下载链接"
+    # 提示用户输入下载链接
+    echo -e "\n=== 配置下载链接 ==="
+    read -p "请输入 pipe-tool 的下载链接: " PIPE_URL
+    read -p "请输入 dcdnd 的下载链接: " DCDND_URL
 
-    # 检查 URL 是否已填写
-    if [ "$PIPE_URL" = "在这里填写 pipe-tool 的下载链接" ] || [ "$DCDND_URL" = "在这里填写 dcdnd 的下载链接" ]; then
-        echo "错误：请先编辑脚本，填写 PIPE_URL 和 DCDND_URL"
-        echo "请将实际的下载链接填写到脚本中对应的位置"
+    # 验证用户输入
+    if [ -z "$PIPE_URL" ] || [ -z "$DCDND_URL" ]; then
+        echo "错误：下载链接不能为空"
         echo -e "\n按任意键返回主菜单..."
         read -n 1 -s -r
         return
