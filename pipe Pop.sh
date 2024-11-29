@@ -6,6 +6,9 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
+# 脚本保存路径
+SCRIPT_PATH="$HOME/pipe Pop.sh"
+
 # 主菜单函数
 function main_menu() {
     while true; do
