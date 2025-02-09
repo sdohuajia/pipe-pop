@@ -85,11 +85,13 @@ function deploy_pipe_pop() {
     echo "下载完成，文件名为 pop，已赋予执行权限，并创建了 download_cache 目录。"
 
     # 让用户输入内存大小、磁盘大小和 Solana 地址，设置默认值
-    read -p "请输入分配内存大小（默认：4G）： " MEMORY_SIZE
-    MEMORY_SIZE=${MEMORY_SIZE:-4G}  # 如果用户没有输入，则使用默认值 4G
+    read -p "请输入分配内存大小（默认：4，单位：GB）：" MEMORY_SIZE
+    MEMORY_SIZE=${MEMORY_SIZE:-4}  # 如果用户没有输入，则使用默认值 4
+    MEMORY_SIZE="${MEMORY_SIZE}G"  # 确保单位为 G
 
-    read -p "请输入分配磁盘大小（默认：100G）： " DISK_SIZE
-    DISK_SIZE=${DISK_SIZE:-100G}  # 如果用户没有输入，则使用默认值 100G
+    read -p "请输入分配磁盘大小（默认：100，单位：GB）：" DISK_SIZE
+    DISK_SIZE=${DISK_SIZE:-100}  # 如果用户没有输入，则使用默认值 100
+    DISK_SIZE="${DISK_SIZE}G"  # 确保单位为 G
 
     read -p "请输入 Solana 地址： " SOLANA_ADDRESS
 
