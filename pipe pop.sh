@@ -94,7 +94,7 @@ function deploy_pipe_pop() {
     read -p "请输入 Solana 地址： " SOLANA_ADDRESS
 
     # 使用 screen 执行 ./pop
-    screen -dmS pop_process ./pop --ram $MEMORY_SIZE --max-disk $DISK_SIZE --cache-dir /data --pubKey $SOLANA_ADDRESS
+    screen -dmS pipe ./pop --ram $MEMORY_SIZE --max-disk $DISK_SIZE --cache-dir /data --pubKey $SOLANA_ADDRESS
 
     echo "已使用 screen 启动 ./pop 进程。"
     read -p "按任意键返回主菜单..."
