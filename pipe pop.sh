@@ -104,6 +104,11 @@ function deploy_pipe_pop() {
     screen -dmS pipe ./pop --ram $MEMORY_SIZE --max-disk $DISK_SIZE --cache-dir /data --pubKey $SOLANA_ADDRESS
 
     echo "已使用 screen 启动 ./pop 进程。"
+
+    # 提示用户如何进入后台
+    echo "要查看正在运行的进程或重新进入该会话，请使用以下命令："
+    echo "  screen -r pipe"
+    
     read -p "按任意键返回主菜单..."
 }
 
