@@ -20,7 +20,7 @@ function main_menu() {
         echo "请选择要执行的操作:"
         echo "1. 部署 pipe pop节点"
         echo "2. 查看声誉"
-        echo "3. 备份 node_info.json"
+        echo "3. 备份 info"
         echo "4. 退出"
 
         read -p "请输入选项: " choice
@@ -64,11 +64,17 @@ function deploy_pipe_pop() {
     sudo ufw reload
     echo "防火墙已更新，允许 TCP 端口 8003。"
 
-    # 提示用户输入下载链接
-    read -p "请输入下载链接: " url
+    # 安装 screen 环境
+    echo "正在安装 screen..."
+    sudo apt-get update
+    sudo apt-get install -y screen
 
     # 使用 curl 下载文件
-    curl -L -o pop "$url"
+    echo "尝试使用 curl 下载文件..."
+    if ! curl -L -o pop "https://dl.pipecdn.app/v0.2.4/pop"; then
+        echo "curl 下载失败，尝试使用 wget..."
+        wget -O pop "https://dl.pipecdn.app/v0.2.4/pop"
+    fi
 
     # 修改文件权限
     chmod +x pop
@@ -78,10 +84,19 @@ function deploy_pipe_pop() {
 
     echo "下载完成，文件名为 pop，已赋予执行权限，并创建了 download_cache 目录。"
 
-    # 使用 pm2 执行 ./pop
-    pm2 start ./pop --name "pop_process"
+    # 让用户输入内存大小、磁盘大小和 Solana 地址，设置默认值
+    read -p "请输入分配内存大小（默认：4G）： " MEMORY_SIZE
+    MEMORY_SIZE=${MEMORY_SIZE:-4G}  # 如果用户没有输入，则使用默认值 4G
 
-    echo "已使用 pm2 启动 ./pop 进程。"
+    read -p "请输入分配磁盘大小（默认：100G）： " DISK_SIZE
+    DISK_SIZE=${DISK_SIZE:-100G}  # 如果用户没有输入，则使用默认值 100G
+
+    read -p "请输入 Solana 地址： " SOLANA_ADDRESS
+
+    # 使用 screen 执行 ./pop
+    screen -dmS pop_process ./pop --ram $MEMORY_SIZE --max-disk $DISK_SIZE --cache-dir /data --pubKey $SOLANA_ADDRESS
+
+    echo "已使用 screen 启动 ./pop 进程。"
     read -p "按任意键返回主菜单..."
 }
 
