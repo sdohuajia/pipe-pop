@@ -101,7 +101,7 @@ function deploy_pipe_pop() {
     read -p "请输入 Solana 地址： " SOLANA_ADDRESS
 
     # 使用 screen 执行 ./pop
-    screen -dmS pipe ./pop --ram $MEMORY_SIZE --max-disk $DISK_SIZE --cache-dir /data --pubKey $SOLANA_ADDRESS
+    screen -dmS pipe ./pop --ram $MEMORY_SIZE --max-disk $DISK_SIZE --cache-dir /data --pubKey $SOLANA_ADDRESS --signup-by-referral-route $REFERRAL_CODE
 
     echo "已使用 screen 启动 ./pop 进程。"
 
@@ -125,6 +125,13 @@ function backup_node_info() {
     mkdir -p ~/pop  # 创建 pop 目录
     cp /root/node_info.json ~/pop/  # 备份文件到 pop 目录
     echo "备份完成，node_info.json 已备份到 ~/pop/ 目录。"
+    read -p "按任意键返回主菜单..."
+}
+
+# 生成邀请
+function generate_referral() {
+    echo "正在生成 pop邀请码..."
+    ./pop --gen-referral-route
     read -p "按任意键返回主菜单..."
 }
 
