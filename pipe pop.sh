@@ -21,7 +21,8 @@ function main_menu() {
         echo "1. 部署 pipe pop节点"
         echo "2. 查看声誉"
         echo "3. 备份 info"
-        echo "4. 退出"
+        echo "4. 生成pop邀请"
+        echo "5. 退出"
 
         read -p "请输入选项: " choice
 
@@ -36,6 +37,9 @@ function main_menu() {
                 backup_node_info
                 ;;
             4)
+                generate_referral
+                ;;
+            5)
                 echo "退出脚本。"
                 exit 0
                 ;;
@@ -128,7 +132,7 @@ function backup_node_info() {
     read -p "按任意键返回主菜单..."
 }
 
-# 生成邀请
+# 生成pop邀请
 function generate_referral() {
     echo "正在生成 pop邀请码..."
     ./pop --gen-referral-route
