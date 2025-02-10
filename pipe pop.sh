@@ -21,7 +21,7 @@ function main_menu() {
         echo "1. 部署 pipe pop节点"
         echo "2. 查看声誉"
         echo "3. 备份 info"
-        echo "4. 生成pop邀请"
+        echo "4. 生成pop邀请（必须运行1）"
         echo "5. 退出"
 
         read -p "请输入选项: " choice
