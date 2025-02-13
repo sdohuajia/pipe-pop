@@ -22,7 +22,8 @@ function main_menu() {
         echo "2. 查看声誉"
         echo "3. 备份 info"
         echo "4. 生成pop邀请（必须运行1）"
-        echo "5. 退出"
+        echo "5. 升级版本（升级前必须备份info）"
+        echo "6. 退出"
 
         read -p "请输入选项: " choice
 
@@ -40,6 +41,9 @@ function main_menu() {
                 generate_referral
                 ;;
             5)
+                upgrade_version
+                ;;
+            6)
                 echo "退出脚本。"
                 exit 0
                 ;;
@@ -126,9 +130,8 @@ function check_status() {
 # 备份 node_info.json 函数
 function backup_node_info() {
     echo "正在备份 node_info.json 文件..."
-    mkdir -p ~/pop  # 创建 pop 目录
-    cp /root/node_info.json ~/pop/  # 备份文件到 pop 目录
-    echo "备份完成，node_info.json 已备份到 ~/pop/ 目录。"
+    cp ~/node_info.json ~/node_info.backup2-4-25  # 备份文件到新的目标文件
+    echo "备份完成，node_info.json 已备份到 ~/node_info.backup2-4-25 文件。"
     read -p "按任意键返回主菜单..."
 }
 
@@ -136,6 +139,46 @@ function backup_node_info() {
 function generate_referral() {
     echo "正在生成 pop邀请码..."
     ./pop --gen-referral-route
+    read -p "按任意键返回主菜单..."
+}
+
+# 升级版本 (2.0.5)
+function upgrade_version() {
+    echo "正在升级到版本 2.0.5..."
+
+    # 检查并停止运行中的 pipe screen 会话
+    if screen -list | grep -q "pipe"; then
+        echo "检测到 pipe screen 会话正在运行，正在终止..."
+        screen -S pipe -X quit
+        echo "pipe screen 会话已终止。"
+    else
+        echo "没有检测到正在运行的 pipe screen 会话。"
+    fi
+
+    # 创建 /opt/pop 目录，如果目录不存在
+    sudo mkdir -p /opt/pop
+
+    # 下载新版本的 pop 直接保存到 /opt/pop/pop
+    sudo wget -O /opt/pop/pop "https://dl.pipecdn.app/v0.2.5/pop"
+    sudo chmod +x /opt/pop/pop
+
+    # 备份 node_info.backup2-4-25 到 /var/lib/pop 并重命名为 node_info.json
+    if [ -f ~/node_info.backup2-4-25 ]; then
+        echo "备份 node_info.backup2-4-25 到 /var/lib/pop/ 目录，并重命名为 node_info.json..."
+        sudo cp ~/node_info.backup2-4-25 /var/lib/pop/node_info.json
+        echo "备份完成，文件已重命名为 node_info.json。"
+    else
+        echo "未找到 node_info.backup2-4-25 文件，跳过备份步骤。"
+    fi
+
+    # 修改工作目录
+    cd /var/lib/pop
+
+    # 刷新 pop 配置
+    /opt/pop/pop --refresh
+
+    echo "升级完成，pop 已更新为版本 2.0.5。"
+
     read -p "按任意键返回主菜单..."
 }
 
