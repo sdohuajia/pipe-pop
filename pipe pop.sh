@@ -167,6 +167,10 @@ WantedBy=multi-user.target" | sudo tee $SERVICE_FILE > /dev/null
     echo "使用以下命令重新启动服务："
     echo "  sudo systemctl restart pipe-pop.service"
 
+    # 查看服务状态，并提示用户按 q 退出
+    echo "现在查看服务状态。按 'q' 退出查看状态。"
+    sudo systemctl status pipe-pop.service
+
     read -p "按任意键返回主菜单..."
 }
 
