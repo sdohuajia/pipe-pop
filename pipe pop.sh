@@ -82,11 +82,24 @@ function deploy_pipe_pop() {
     mkdir -p /root/pipenetwork/download_cache
     cd /root/pipenetwork
 
-    # 使用 curl 下载文件
-    echo "尝试使用 curl 下载文件..."
-    if ! curl -L -o pop "https://dl.pipecdn.app/v0.2.5/pop"; then
-        echo "curl 下载失败，尝试使用 wget..."
-        wget -O pop "https://dl.pipecdn.app/v0.2.5/pop"
+    # 询问用户是否使用白名单
+    echo "请选择下载链接类型："
+    echo "1) 使用白名单下载链接"
+    echo "2) 使用默认下载链接"
+    read -p "请输入选择（1 或 2）： " USE_WHITELIST
+
+    if [[ "$USE_WHITELIST" == "1" ]]; then
+        # 让用户填写白名单 URL
+        read -p "请输入白名单下载链接： " DOWNLOAD_URL
+        echo "使用白名单链接下载文件..."
+        curl -L -o pop "$DOWNLOAD_URL"
+    else
+        # 使用默认的 curl 下载链接
+        echo "尝试使用 curl 下载文件..."
+        if ! curl -L -o pop "https://dl.pipecdn.app/v0.2.5/pop"; then
+            echo "curl 下载失败，尝试使用 wget..."
+            wget -O pop "https://dl.pipecdn.app/v0.2.5/pop"
+        fi
     fi
 
     # 修改文件权限
