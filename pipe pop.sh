@@ -177,6 +177,7 @@ WantedBy=multi-user.target" | sudo tee $SERVICE_FILE > /dev/null
 # 查看声誉函数
 function check_status() {
     echo "正在查看 ./pop 的状态..."
+    cd /root/pipenetwork
     ./pop --status
     read -p "按任意键返回主菜单..."
 }
@@ -184,6 +185,7 @@ function check_status() {
 # 备份 node_info.json 函数
 function backup_node_info() {
     echo "正在备份 node_info.json 文件..."
+    cd /root/pipenetwork
     cp ~/node_info.json ~/node_info.backup2-4-25  # 备份文件到新的目标文件
     echo "备份完成，node_info.json 已备份到 ~/node_info.backup2-4-25 文件。"
     read -p "按任意键返回主菜单..."
@@ -192,6 +194,7 @@ function backup_node_info() {
 # 生成pop邀请
 function generate_referral() {
     echo "正在生成 pop邀请码..."
+    cd /root/pipenetwork
     ./pop --gen-referral-route
     read -p "按任意键返回主菜单..."
 }
