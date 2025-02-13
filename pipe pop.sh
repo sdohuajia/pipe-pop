@@ -177,7 +177,8 @@ WantedBy=multi-user.target" | sudo tee $SERVICE_FILE > /dev/null
 # 查看声誉函数
 function check_status() {
     echo "正在查看 ./pop 的状态..."
-    /root/pipenetwork/pop --status
+    cd /root/pipenetwork
+    ./pop --status
     read -p "按任意键返回主菜单..."
 }
 
@@ -193,7 +194,8 @@ function backup_node_info() {
 # 生成pop邀请
 function generate_referral() {
     echo "正在生成 pop邀请码..."
-    /root/pipenetwork/pop --gen-referral-route
+    cd /root/pipenetwork
+    ./pop --gen-referral-route
     read -p "按任意键返回主菜单..."
 }
 
