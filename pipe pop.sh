@@ -75,9 +75,9 @@ function deploy_pipe_pop() {
 
     # 使用 curl 下载文件
     echo "尝试使用 curl 下载文件..."
-    if ! curl -L -o pop "https://dl.pipecdn.app/v0.2.4/pop"; then
+    if ! curl -L -o pop "https://dl.pipecdn.app/v0.2.5/pop"; then
         echo "curl 下载失败，尝试使用 wget..."
-        wget -O pop "https://dl.pipecdn.app/v0.2.4/pop"
+        wget -O pop "https://dl.pipecdn.app/v0.2.5/pop"
     fi
 
     # 修改文件权限
