@@ -72,10 +72,15 @@ function deploy_pipe_pop() {
     sudo ufw reload
     echo "防火墙已更新，允许 TCP 端口 8003。"
 
-    # 安装 screen 环境
-    echo "正在安装 screen..."
+    # 安装环境
+    echo "正在安装 环境..."
     sudo apt-get update
-    sudo apt-get install -y screen
+    sudo apt install curl iptables build-essential git wget lz4 jq make gcc nano automake autoconf tmux htop nvme-cli pkg-config libssl-dev libleveldb-dev tar clang aria2 bsdmainutils ncdu unzip libleveldb-dev -y
+
+    # 创建下载缓存目录
+    mkdir -p /root/pipenetwork
+    mkdir -p /root/pipenetwork/download_cache
+    cd /root/pipenetwork
 
     # 使用 curl 下载文件
     echo "尝试使用 curl 下载文件..."
@@ -86,16 +91,18 @@ function deploy_pipe_pop() {
 
     # 修改文件权限
     chmod +x pop
-
-    # 创建下载缓存目录
-    mkdir -p download_cache
-
+    
     echo "下载完成，文件名为 pop，已赋予执行权限，并创建了 download_cache 目录。"
 
     # 让用户输入邀请码，如果未输入，则使用默认邀请码
     read -p "请输入邀请码（默认：cb2927df9209ba0a）：" REFERRAL_CODE
     REFERRAL_CODE=${REFERRAL_CODE:-cb2927df9209ba0a}  # 如果用户没有输入，则使用默认邀请码
+
+    # 输出使用的邀请码
     echo "使用的邀请码是：$REFERRAL_CODE"
+
+    # 执行 ./pop 命令并传递邀请码
+    ./pop --signup-by-referral-route $REFERRAL_CODE
 
     # 让用户输入内存大小、磁盘大小和 Solana 地址，设置默认值
     read -p "请输入分配内存大小（默认：4，单位：GB）：" MEMORY_SIZE
@@ -108,15 +115,45 @@ function deploy_pipe_pop() {
 
     read -p "请输入 Solana 地址： " SOLANA_ADDRESS
 
-    # 使用 screen 执行 ./pop
-    screen -dmS pipe ./pop --ram $MEMORY_SIZE --max-disk $DISK_SIZE --cache-dir /data --pubKey $SOLANA_ADDRESS
+    # 创建 systemd 服务文件
+    SERVICE_FILE="/etc/systemd/system/pipe-pop.service"
+    echo "[Unit]
+Description=Pipe POP Node Service
+After=network.target
+Wants=network-online.target
 
-    echo "已使用 screen 启动 ./pop 进程。"
+[Service]
+User=root
+Group=root
+ExecStart=/root/pipenetwork/pop --ram=$MEMORY_SIZE --pubKey $SOLANA_ADDRESS --max-disk $DISK_SIZE --cache-dir /var/cache/pop/download_cache
+Restart=always
+RestartSec=5
+LimitNOFILE=65536
+LimitNPROC=4096
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=dcdn-node
+WorkingDirectory=/root/pipenetwork
 
-    # 提示用户如何进入后台
-    echo "要查看正在运行的进程或重新进入该会话，请使用以下命令："
-    echo "  screen -r pipe"
-    
+[Install]
+WantedBy=multi-user.target" | sudo tee $SERVICE_FILE > /dev/null
+
+    # 重新加载 systemd 配置
+    sudo systemctl daemon-reload
+
+    # 启动并设置服务开机启动
+    sudo systemctl start pipe-pop.service
+    sudo systemctl enable pipe-pop.service
+
+    # 提示用户服务已启动
+    echo "Pipe POP 服务已启动并配置为开机启动。"
+    echo "使用以下命令查看服务状态："
+    echo "  sudo systemctl status pipe-pop.service"
+    echo "使用以下命令停止服务："
+    echo "  sudo systemctl stop pipe-pop.service"
+    echo "使用以下命令重新启动服务："
+    echo "  sudo systemctl restart pipe-pop.service"
+
     read -p "按任意键返回主菜单..."
 }
 
@@ -146,32 +183,28 @@ function generate_referral() {
 function upgrade_version() {
     echo "正在升级到版本 2.0.5..."
 
-    # 创建 /opt/pop 目录，如果目录不存在
-    sudo mkdir -p /opt/pop
+    # 停止 pipe-pop 服务
+    sudo systemctl stop pipe-pop
+    echo "已停止 pipe-pop 服务。"
 
-    # 下载新版本的 pop 直接保存到 /opt/pop/pop
-    sudo wget -O /opt/pop/pop "https://dl.pipecdn.app/v0.2.5/pop"
-    sudo chmod +x /opt/pop/pop
+    # 删除旧版本的 pop
+    sudo rm -f /root/pipenetwork/pop
+    echo "已删除旧版本 pop 文件。"
 
-    # 创建 /var/lib/pop 目录，如果目录不存在
-    sudo mkdir -p /var/lib/pop
+    # 下载新版本的 pop 到指定路径
+    wget -O /root/pipenetwork/pop "https://dl.pipecdn.app/v0.2.5/pop"
+    sudo chmod +x /root/pipenetwork/pop
+    echo "已下载并赋予执行权限，pop 已更新为版本 2.0.5。"
 
-    # 备份 node_info.backup2-4-25 到 /var/lib/pop 并重命名为 node_info.json
-    if [ -f ~/node_info.backup2-4-25 ]; then
-        echo "备份 node_info.backup2-4-25 到 /var/lib/pop/ 目录，并重命名为 node_info.json..."
-        sudo cp ~/node_info.backup2-4-25 /var/lib/pop/node_info.json
-        echo "备份完成，文件已重命名为 node_info.json。"
-    else
-        echo "未找到 node_info.backup2-4-25 文件，跳过备份步骤。"
-    fi
+    # 重新加载 systemd 配置
+    sudo systemctl daemon-reload
 
-    # 修改工作目录
-    cd /var/lib/pop
+    # 重启 pipe-pop 服务
+    sudo systemctl restart pipe-pop
+    echo "pipe-pop 服务已重启。"
 
-    # 刷新 pop 配置
-    /opt/pop/pop --refresh
-
-    echo "升级完成，pop 已更新为版本 2.0.5。"
+    # 实时查看服务日志
+    journalctl -u pipe-pop -f
 
     read -p "按任意键返回主菜单..."
 }
