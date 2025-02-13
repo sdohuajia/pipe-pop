@@ -108,8 +108,8 @@ function deploy_pipe_pop() {
     echo "下载完成，文件名为 pop，已赋予执行权限，并创建了 download_cache 目录。"
 
     # 让用户输入邀请码，如果未输入，则使用默认邀请码
-    read -p "请输入邀请码（默认：cb2927df9209ba0a）：" REFERRAL_CODE
-    REFERRAL_CODE=${REFERRAL_CODE:-cb2927df9209ba0a}  # 如果用户没有输入，则使用默认邀请码
+    read -p "请输入邀请码（默认：b06fe87c32aa189）：" REFERRAL_CODE
+    REFERRAL_CODE=${REFERRAL_CODE:-b06fe87c32aa189}  # 如果用户没有输入，则使用默认邀请码
 
     # 输出使用的邀请码
     echo "使用的邀请码是：$REFERRAL_CODE"
