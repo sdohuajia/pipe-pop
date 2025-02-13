@@ -146,15 +146,6 @@ function generate_referral() {
 function upgrade_version() {
     echo "正在升级到版本 2.0.5..."
 
-    # 检查并停止运行中的 pipe screen 会话
-    if screen -list | grep -q "pipe"; then
-        echo "检测到 pipe screen 会话正在运行，正在终止..."
-        screen -S pipe -X quit
-        echo "pipe screen 会话已终止。"
-    else
-        echo "没有检测到正在运行的 pipe screen 会话。"
-    fi
-
     # 创建 /opt/pop 目录，如果目录不存在
     sudo mkdir -p /opt/pop
 
