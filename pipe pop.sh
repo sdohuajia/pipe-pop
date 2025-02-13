@@ -162,6 +162,9 @@ function upgrade_version() {
     sudo wget -O /opt/pop/pop "https://dl.pipecdn.app/v0.2.5/pop"
     sudo chmod +x /opt/pop/pop
 
+    # 创建 /var/lib/pop 目录，如果目录不存在
+    sudo mkdir -p /var/lib/pop
+
     # 备份 node_info.backup2-4-25 到 /var/lib/pop 并重命名为 node_info.json
     if [ -f ~/node_info.backup2-4-25 ]; then
         echo "备份 node_info.backup2-4-25 到 /var/lib/pop/ 目录，并重命名为 node_info.json..."
