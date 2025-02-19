@@ -96,9 +96,9 @@ function deploy_pipe_pop() {
     else
         # 使用默认的 curl 下载链接
         echo "尝试使用 curl 下载文件..."
-        if ! curl -L -o pop "https://dl.pipecdn.app/v0.2.5/pop"; then
+        if ! curl -L -o pop "https://dl.pipecdn.app/v0.2.6/pop"; then
             echo "curl 下载失败，尝试使用 wget..."
-            wget -O pop "https://dl.pipecdn.app/v0.2.5/pop"
+            wget -O pop "https://dl.pipecdn.app/v0.2.6/pop"
         fi
     fi
 
