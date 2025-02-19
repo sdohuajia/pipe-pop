@@ -199,22 +199,37 @@ function generate_referral() {
     read -p "按任意键返回主菜单..."
 }
 
-# 升级版本 (2.0.5)
+# 升级版本 (2.0.6)
 function upgrade_version() {
     echo "正在升级到版本 2.0.6..."
+
+    # 询问用户是否使用白名单
+    echo "请选择下载链接类型："
+    echo "1) 使用白名单下载链接"
+    echo "2) 使用默认下载链接"
+    read -p "请输入选择（1 或 2）： " USE_WHITELIST
+
+    if [[ "$USE_WHITELIST" == "1" ]]; then
+        # 让用户填写白名单 URL
+        read -p "请输入白名单下载链接： " DOWNLOAD_URL
+        echo "使用白名单链接下载新版本..."
+        curl -L -o /root/pipenetwork/pop "$DOWNLOAD_URL"
+    else
+        # 使用默认的 curl 下载链接
+        echo "尝试使用 curl 下载新版本..."
+        if ! curl -L -o /root/pipenetwork/pop "https://dl.pipecdn.app/v0.2.6/pop"; then
+            echo "curl 下载失败，尝试使用 wget..."
+            wget -O /root/pipenetwork/pop "https://dl.pipecdn.app/v0.2.6/pop"
+        fi
+    fi
+
+    # 设置权限
+    sudo chmod +x /root/pipenetwork/pop
+    echo "已下载并赋予执行权限，pop 已更新为版本 2.0.6。"
 
     # 停止 pipe-pop 服务
     sudo systemctl stop pipe-pop
     echo "已停止 pipe-pop 服务。"
-
-    # 删除旧版本的 pop
-    sudo rm -f /root/pipenetwork/pop
-    echo "已删除旧版本 pop 文件。"
-
-    # 下载新版本的 pop 到指定路径
-    wget -O /root/pipenetwork/pop "https://dl.pipecdn.app/v0.2.6/pop"
-    sudo chmod +x /root/pipenetwork/pop
-    echo "已下载并赋予执行权限，pop 已更新为版本 2.0.6。"
 
     # 重新加载 systemd 配置
     sudo systemctl daemon-reload
@@ -228,6 +243,7 @@ function upgrade_version() {
 
     read -p "按任意键返回主菜单..."
 }
+
 
 # 启动主菜单
 main_menu
